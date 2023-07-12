@@ -1,60 +1,56 @@
-# Jenkins Pipeline: Docker Image Build and Deployment
+# Jenkins Pipeline for Docker Image Deployment
 
-This Jenkins pipeline script automates the build and deployment of a Docker image to Docker Hub and an EC2 instance.
+This Jenkins pipeline script automates the deployment of a Docker image to an EC2 instance using Docker Hub and webhook triggering.
 
 ## Prerequisites
 
-- Jenkins CI/CD server configured with the necessary plugins.
-- Docker installed on the Jenkins server.
-- Docker Hub account and credentials.
-- EC2 instance set up and accessible.
+- Jenkins installed and set up
+- Docker Hub account with appropriate credentials
+- Access to an EC2 instance with Docker installed
 
-## Pipeline Stages
+## Setup
 
-1. **Checkout:**
-   - This stage checks out the source code from the specified GitHub repository.
+1. Create Jenkins credentials:
+   - Create a new set of credentials in Jenkins to access Docker Hub. Name it 'docker-hub-credentials' or a suitable name of your choice.
+   - Add the Docker Hub username and password to the credentials.
 
-2. **Test case:**
-   - This stage installs the required dependencies and runs the test cases using pytest.
+2. Configure the container port:
+   - Update the port number in the line `docker run -d --name my-container -p 5000:5000 shrutibhapkar/mainassignment:${env.BUILD_ID}` to the desired container port.
 
-3. **Build Docker Image:**
-   - This stage builds a Docker image using the specified Dockerfile and tags it with the Jenkins build ID.
+3. Set up the webhook:
+   - In your version control system (GitHub in this case), navigate to the repository settings.
+   - Add a webhook with the Jenkins URL followed by '/github-webhook/' as the payload URL.
+   - Select the events to trigger the webhook (e.g., push events).
 
-4. **Push Docker Image to Docker Hub:**
-   - This stage pushes the Docker image to Docker Hub using the provided Docker Hub credentials.
+## Pipeline Steps
 
-5. **Deploy Docker Image on EC2:**
-   - This stage pulls the Docker image from Docker Hub.
-   - It stops and removes any existing containers with the same name.
-   - It runs a new container with the pulled Docker image on the specified port.
+1. Checkout:
+   - Clones the GitHub repository into the Jenkins workspace.
 
-## Configuration
+2. Test case:
+   - Installs the required dependencies and runs the test cases using Pytest.
 
-1. Set up Docker Hub credentials in Jenkins:
-   - Go to Jenkins > Credentials > System > Global credentials (unrestricted).
-   - Add your Docker Hub credentials with the ID "docker-hub-credentials".
-   - Provide the username and password/token for your Docker Hub account.
+3. Build Docker Image:
+   - Builds the Docker image using the Dockerfile in the 'assignment' directory.
 
-2. Adjust the script to fit your requirements:
-   - Modify the Git repository URL in the 'Checkout' stage to point to your own repository.
-   - Adjust the commands within each stage as per your project's requirements.
+4. Push Docker Image to Docker Hub:
+   - Pushes the Docker image to Docker Hub using the provided credentials.
 
-3. Configure the EC2 instance:
-   - Ensure that your EC2 instance is set up and accessible via SSH.
+5. Deploy Docker Image on EC2:
+   - Pulls the Docker image from Docker Hub.
+   - Stops and removes any existing container with the name 'my-container'.
+   - Runs a new container with the pulled Docker image on the specified container port.
 
-## Usage
+6. Clean up:
+   - Clean up any resources or perform any necessary cleanup tasks.
 
-1. Set up a Jenkins job with the pipeline script:
-   - Create a new Jenkins job and select "Pipeline" as the job type.
-   - Copy and paste the pipeline script into the Pipeline section of the job configuration.
-   - Save the configuration.
-
-2. Run the Jenkins job:
-   - Trigger the job manually or set up a trigger based on your requirements.
-   - The pipeline will execute the stages sequentially and perform the specified tasks.
-
+## Refer my credentials to access jenkins -
+[pipeline](http://13.126.119.28:8080/job/pipeline%20assignment/)
+Username-shruti
+Password-user123
+for container port deployed output-
+[ouput](http://13.126.119.28:5000/)
 ## Notes
 
-- Make sure to replace the placeholders and customize the script to fit your project's needs.
-- This is a basic example, and you can modify the pipeline stages and tasks as per your requirements.
-
+- Make sure to replace the placeholders in the script with the appropriate values.
+- This is a basic example, and you can modify the script to meet your specific requirements.
