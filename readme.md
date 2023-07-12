@@ -44,10 +44,12 @@ This Jenkins pipeline script automates the deployment of a Docker image to an EC
 6. Clean up:
    - Clean up any resources or perform any necessary cleanup tasks.
 
-## Refer my credentials to access jenkins -
+## credentials to access jenkins -
 [pipeline](http://13.126.119.28:8080/job/pipeline%20assignment/)
 Username-shruti
+
 Password-user123
+
 for container port deployed output-
 [ouput](http://13.126.119.28:5000/)
 ## Notes
