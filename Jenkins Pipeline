@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ShrutiBhapkar/assignment.git'
+            }
+        }
+      stage('Test case') {
+            steps {
+                 sh 'cd assignment && pip install -r requirements.txt && pytest test/'
+            }
+        }
+      
+        
+        stage('Build Docker Image') {
+            steps {
+                dir('assignment') {
+                    script {
+                        def customImage = docker.build("shrutibhapkar/mainassignment:${env.BUILD_ID}","-f Dockerfile .")
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        docker.image("shrutibhapkar/mainassignment:${env.BUILD_ID}").push()
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Docker Image on EC2') {
+            steps {
+              
+                    sh "docker pull shrutibhapkar/mainassignment:${env.BUILD_ID}"
+                    sh 'docker stop my-container || true'
+                    sh 'docker rm my-container || true'
+                    sh "docker run -d --name my-container -p 5000:5000 shrutibhapkar/mainassignment:${env.BUILD_ID}"
+                
+            }
+        }
+          
+    }
+}
